@@ -1,0 +1,6 @@
+12:23:03.884 [start] mode=hold-9101 host=192.0.2.10 port=9101
+12:23:03.886 [net] connected to 192.0.2.10:9101
+12:23:03.886 [hold] holding port 9101 idle for 30.0s
+12:23:08.886 [net] peer closed
+12:23:08.886 [net] closed
+12:23:08.886 [end] final: no frames

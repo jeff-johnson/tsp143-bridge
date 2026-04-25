@@ -1,0 +1,7 @@
+12:21:12.999 [start] mode=simple host=192.0.2.10 port=9100
+12:21:12.001 [net] connected to 192.0.2.10:9100
+12:21:12.002 [tx] ENABLE_ASB (4 bytes)
+12:21:13.507 [tx] block1+ETB (32 bytes)
+12:21:14.525 [tx] block2+ETB (17 bytes)
+12:21:15.534 [tx] cut (6 bytes)
+12:21:20.558 [end] final: v3 sz=9 etb=0 clean

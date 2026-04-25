@@ -1,0 +1,70 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-04-25 12:51 MDT
+Warning: 192.0.2.10 giving up on port because retransmission cap hit (1).
+Nmap scan report for 192.0.2.10
+Host is up (0.0010s latency).
+Not shown: 65493 closed tcp ports (reset), 36 filtered tcp ports (no-response)
+PORT      STATE SERVICE     VERSION
+23/tcp    open  telnet
+80/tcp    open  http        CenteHTTPd/1.1
+515/tcp   open  printer
+9100/tcp  open  jetdirect?
+9101/tcp  open  jetdirect?
+22222/tcp open  easyengine?
+2 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port23-TCP:V=7.95%I=7%D=4/25%Time=69ED0D4D%P=x86_64-pc-linux-gnu%r(NULL
+SF:,D3,"\xff\xfb\x03\xff\xfb\x01\xff\xfe\x01\r\n\r\nWelcome\x20to\x20TSP10
+SF:0III\x20TELNET\x20Utility\.\r\nCopyright\(C\)\x202016\x20Star\x20Micron
+SF:ics\x20co\.,\x20Ltd\.\r\n\r\n<<\x20Connected\x20Device\x20>>\r\n\x20\x2
+SF:0\x20Device\x20Model\x20:\x20TSP143IIILAN\x20\(STR_T-001\)\r\n\x20\x20\
+SF:x20MAC\x20Address\x20\x20:\x2002:00:00:00:00:01\r\n\r\nlogin:\x20")%r(G
+SF:enericLines,FD,"\xff\xfb\x03\xff\xfb\x01\xff\xfe\x01\r\n\r\nWelcome\x20
+SF:to\x20TSP100III\x20TELNET\x20Utility\.\r\nCopyright\(C\)\x202016\x20Sta
+SF:r\x20Micronics\x20co\.,\x20Ltd\.\r\n\r\n<<\x20Connected\x20Device\x20>>
+SF:\r\n\x20\x20\x20Device\x20Model\x20:\x20TSP143IIILAN\x20\(STR_T-001\)\r
+SF:\n\x20\x20\x20MAC\x20Address\x20\x20:\x2002:00:00:00:00:01\r\n\r\nlogin
+SF::\x20\r\npassword:\x20\r\n\r\nLogin\x20incorrect\r\n\r\nlogin:\x20")%r(
+SF:tn3270,EE,"\xff\xfb\x03\xff\xfb\x01\xff\xfe\x01\xff\xfe\x18\r\n\r\nWelc
+SF:ome\x20to\x20TSP100III\x20TELNET\x20Utility\.\r\nCopyright\(C\)\x202016
+SF:\x20Star\x20Micronics\x20co\.,\x20Ltd\.\r\n\r\n<<\x20Connected\x20Devic
+SF:e\x20>>\r\n\x20\x20\x20Device\x20Model\x20:\x20TSP143IIILAN\x20\(STR_T-
+SF:001\)\r\n\x20\x20\x20MAC\x20Address\x20\x20:\x2002:00:00:00:00:01\r\n\r
+SF:\nlogin:\x20IBM-3279-4-E\xff\xfe\x19\xff\xfc\x19\xff\xfe\0\xff\xfc\0")%
+SF:r(GetRequest,10B,"\xff\xfb\x03\xff\xfb\x01\xff\xfe\x01\r\n\r\nWelcome\x
+SF:20to\x20TSP100III\x20TELNET\x20Utility\.\r\nCopyright\(C\)\x202016\x20S
+SF:tar\x20Micronics\x20co\.,\x20Ltd\.\r\n\r\n<<\x20Connected\x20Device\x20
+SF:>>\r\n\x20\x20\x20Device\x20Model\x20:\x20TSP143IIILAN\x20\(STR_T-001\)
+SF:\r\n\x20\x20\x20MAC\x20Address\x20\x20:\x2002:00:00:00:00:01\r\n\r\nlog
+SF:in:\x20GET\x20/\x20HTTP/1\.0\r\npassword:\x20\r\n\r\nLogin\x20incorrect
+SF:\r\n\r\nlogin:\x20")%r(RPCCheck,DC,"\xff\xfb\x03\xff\xfb\x01\xff\xfe\x0
+SF:1\r\n\r\nWelcome\x20to\x20TSP100III\x20TELNET\x20Utility\.\r\nCopyright
+SF:\(C\)\x202016\x20Star\x20Micronics\x20co\.,\x20Ltd\.\r\n\r\n<<\x20Conne
+SF:cted\x20Device\x20>>\r\n\x20\x20\x20Device\x20Model\x20:\x20TSP143IIILA
+SF:N\x20\(STR_T-001\)\r\n\x20\x20\x20MAC\x20Address\x20\x20:\x2000:11:62:1
+SF:3:DE:EF\r\n\r\nlogin:\x20\(r\x08\x08\|\(r\x08\x08");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port80-TCP:V=7.95%I=7%D=4/25%Time=69ED0D4C%P=x86_64-pc-linux-gnu%r(GetR
+SF:equest,11C6,"HTTP/1\.0\x20200\x20OK\r\nServer:\x20CenteHTTPd/1\.1\r\nCo
+SF:ntent-Type:\x20text/html\r\nConnection:\x20close\r\n\r\n<!doctype\x20ht
+SF:ml>\n<html\x20lang=\"en\">\n<head>\n<meta\x20charset=\"utf-8\">\n<meta\
+SF:x20http-equiv=\"Pragma\"\x20content=\"no-cache\">\n<meta\x20http-equiv=
+SF:\"Cache-Control\"\x20content=\"no-cache\">\n<meta\x20http-equiv=\"Expir
+SF:es\"\x20content=\"0\">\n<title>TSP100III\x20Network\x20Utility</title>\
+SF:n<meta\x20name=\"description\"\x20content=\"\">\n<meta\x20id=\"viewport
+SF:Add\"\x20name=\"viewport\"\x20content=\"width=device-width,\x20initial-
+SF:scale=1\">\n<link\x20rel=\"stylesheet\"\x20href=\"\.\./common/styles\.c
+SF:ss\">\n</head>\n<body\x20class=\"page-index\">\n<div\x20class=\"wrapper
+SF:\">\n<header\x20class=\"pageHeader\">\n<p>\n<img\x20src=\"\.\./image/St
+SF:arLogo_Blue\.png\"\x20class=\"pageHeader-logo\">\n<span\x20class=\"page
+SF:Header-ProductName\"><span>TSP100III</span>\x20<span\x20class=\"pageHea
+SF:der-ProductNameSub\">Network\x20Utility</span></span>\n</p>\n<div\x20cl
+SF:ass=\"btnForMobile\">\n<button\x20type=\"button\"\x20id=\"toggleNav\"\x
+SF:20class=\"navbar-toggle\">\n<span\x20class=\"sr-only\">")%r(FourOhFourR
+SF:equest,B2,"HTTP/1\.0\x20404\x20Not\x20Found\r\nServer:\x20CenteHTTPd/1\
+SF:.1\r\nContent-Type:\x20text/html\r\nConnection:\x20close\r\n\r\n<html><
+SF:head>\n<meta\x20http-equiv=\"refresh\"\x20content=\"0;\x20url=/index\.h
+SF:tm\">\n</head></html>\n");
+MAC Address: 02:00:00:00:00:01 (Star Micronics)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 171.50 seconds

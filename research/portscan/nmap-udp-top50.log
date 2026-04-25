@@ -1,0 +1,23 @@
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-04-25 12:54 MDT
+Warning: 192.0.2.10 giving up on port because retransmission cap hit (0).
+Nmap scan report for 192.0.2.10
+Host is up (0.0045s latency).
+Not shown: 36 closed udp ports (port-unreach)
+PORT      STATE         SERVICE
+68/udp    open|filtered dhcpc
+69/udp    open|filtered tftp
+111/udp   open|filtered rpcbind
+136/udp   open|filtered profile
+139/udp   open|filtered netbios-ssn
+1025/udp  open|filtered blackjack
+1026/udp  open|filtered win-rpc
+1900/udp  open|filtered upnp
+2048/udp  open|filtered dls-monitor
+4500/udp  open|filtered nat-t-ike
+5060/udp  open|filtered sip
+32768/udp open|filtered omad
+49153/udp open|filtered unknown
+49154/udp open|filtered unknown
+MAC Address: 02:00:00:00:00:01 (Star Micronics)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.40 seconds

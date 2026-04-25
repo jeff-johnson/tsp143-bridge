@@ -1,0 +1,16 @@
+2026-04-25 12:41:46,105 star_discovery INFO Advertising IP: 192.0.2.10, MAC: 02:00:00:00:00:01
+2026-04-25 12:41:46,105 star_discovery INFO Discovery responder listening on UDP port 22222, advertising as TSP143III
+2026-04-25 12:41:54,700 star_discovery INFO Discovery request from 127.0.0.1:35010
+2026-04-25 12:41:54,700 star_discovery DEBUG Sent response from 192.0.2.10 to 127.0.0.1:35010
+2026-04-25 12:43:33,506 star_discovery INFO Discovery request from 192.0.2.20:35222
+2026-04-25 12:43:33,506 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:35222
+2026-04-25 12:43:36,681 star_discovery INFO Discovery request from 192.0.2.20:45868
+2026-04-25 12:43:36,681 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:45868
+2026-04-25 12:43:43,960 star_discovery INFO Discovery request from 192.0.2.20:46490
+2026-04-25 12:43:43,960 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:46490
+2026-04-25 12:43:49,722 star_discovery INFO Discovery request from 192.0.2.20:35851
+2026-04-25 12:43:49,722 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:35851
+2026-04-25 12:43:59,756 star_discovery INFO Discovery request from 192.0.2.20:46073
+2026-04-25 12:43:59,757 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:46073
+2026-04-25 12:44:09,837 star_discovery INFO Discovery request from 192.0.2.20:60684
+2026-04-25 12:44:09,837 star_discovery DEBUG Sent response from 192.0.2.10 to 192.0.2.20:60684

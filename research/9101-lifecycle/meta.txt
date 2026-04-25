@@ -1,0 +1,20 @@
+scenario: 9101-lifecycle
+captured: 2026-04-25T16:23:03Z
+host_os:  Debian 13 (Linux 6.12.74) — VM tsp143lan
+iface:    enp0s8 (10.0.0.1/24, isolated wired segment to printer)
+tshark:   no
+
+Printer at the time of capture: same unit as discovery scenario.
+  model:    TSP100IIILAN (advertises "TSP143IIILAN (STR_T-001)")
+  firmware: V2.2 main, V2.2 boot
+  state:    cover closed, paper loaded, no print job in flight
+
+Probe behavior:
+  Opened TCP connection to port 9101, sent NOTHING, waited.
+  Requested 30s hold; printer closed the connection after 5.0s.
+
+Substitutions applied:
+  printer MAC -> 02:00:00:00:00:01
+  host MAC    -> 02:00:00:00:00:02
+  printer IP  -> 192.0.2.10
+  host IP     -> 192.0.2.20

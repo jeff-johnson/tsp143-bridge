@@ -1,0 +1,17 @@
+scenario: asb-states
+captured: 2026-04-25T16:57:13Z
+host_os:  Debian 13 — VM tsp143lan
+iface:    enp0s8 (10.0.0.1/24, isolated wired segment to printer)
+tshark:   no
+
+Probe: probe.py watch-asb on TCP/9100 with ENABLE_ASB sent up front, idling
+       for 90s while the operator cycles printer states (cover open/close,
+       paper pull/reload, feed button).
+
+Captured: 10 unsolicited ASB frames (4 distinct byte patterns).
+
+Substitutions applied:
+  printer MAC -> 02:00:00:00:00:01
+  host MAC    -> 02:00:00:00:00:02
+  printer IP  -> 192.0.2.10
+  host IP     -> 192.0.2.20

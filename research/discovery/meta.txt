@@ -1,0 +1,29 @@
+scenario: discovery
+captured: 2026-04-25T16:11:24Z
+host_os:  Debian 13 (Linux 6.12.74) — VM tsp143lan
+iface:    enp0s8 (10.0.0.1/24, isolated wired segment to printer)
+tshark:   no
+
+Printer at the time of capture:
+  model:     TSP100IIILAN (advertises "TSP143IIILAN (STR_T-001)" in full-model field)
+  firmware:  V2.2 main, V2.2 boot
+  MAC:       00:11:62:13:de:ef         (real)        -> 02:00:00:00:00:01 (synthetic)
+  IP:        10.0.0.120 (DHCP lease)   (real)        -> 192.0.2.10        (synthetic)
+  gateway:   0.0.0.0 (none on isolated segment, unchanged in synthetic capture)
+
+Capture environment notes:
+  - Printer on isolated /24 segment (no internet, no other hosts beyond the VM
+    and dnsmasq DHCP). This isolation reproduces the original conditions under
+    which the bridge's hardcoded template in star_discovery.py was first captured.
+  - On the main home network with the printer behind iptables DNAT, the printer
+    is unreachable for UDP discovery (only TCP is forwarded). On a flat home WiFi
+    network where the printer is wired and clients are on WiFi, the printer is
+    technically reachable but discovery still failed in our tests until we sent
+    the *correct* 28-byte structured query rather than a loose "STR_BCAST" + pad.
+
+Substitutions applied:
+  printer MAC -> 02:00:00:00:00:01
+  host MAC    -> 02:00:00:00:00:02
+  printer IP  -> 192.0.2.10
+  host IP     -> 192.0.2.20
+  gateway IP  -> (n/a — isolated segment had no gateway)

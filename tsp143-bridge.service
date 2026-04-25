@@ -1,0 +1,16 @@
+[Unit]
+Description=TSP143IIIU Network Print Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/tsp143-bridge/run.sh
+Restart=on-failure
+RestartSec=5
+User=tsp-bridge
+Group=tsp-bridge
+SupplementaryGroups=lp
+
+[Install]
+WantedBy=multi-user.target

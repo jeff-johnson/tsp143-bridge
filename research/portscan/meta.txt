@@ -1,0 +1,13 @@
+scenario: portscan
+captured: 2026-04-25T16:51-12:54Z
+host_os:  Debian 13 — VM tsp143lan
+iface:    enp0s8 (10.0.0.1/24, isolated wired segment to printer)
+tools:    nmap 7.95+dfsg-3
+
+Probed:
+  - TCP all 65535 ports (-sS -sV -p- --max-retries 1 -T4)  ~171s
+  - UDP top 50           (-sU --top-ports 50 --max-retries 0)  <1s
+
+Substitutions applied:
+  printer MAC -> 02:00:00:00:00:01
+  printer IP  -> 192.0.2.10

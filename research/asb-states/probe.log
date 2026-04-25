@@ -1,0 +1,6 @@
+12:57:13.117 [start] mode=watch-asb host=192.0.2.10 port=9100
+12:57:13.119 [net] connected to 192.0.2.10:9100
+12:57:13.119 [tx] ENABLE_ASB (4 bytes)
+12:57:13.119 [watch] capturing ASB transitions for 90.0s — go cycle states
+12:58:43.221 [net] closed
+12:58:43.221 [end] final: v3 sz=9 etb=2 ERR=[offline,cover_open]

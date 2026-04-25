@@ -1,0 +1,17 @@
+scenario: etb-sweep
+captured: 2026-04-25T17:01:49Z
+host_os:  Debian 13 — VM tsp143lan
+iface:    enp0s8 (10.0.0.1/24, isolated wired segment)
+tshark:   no
+
+Probe: probe.py etb-sweep — sends ENABLE_ASB + CLEAR_ETB, then 32
+       sequential text-block-then-ETB pairs, then partial cut.
+       Each ETB triggers an unsolicited ASB frame from the printer.
+
+Captured: 33 ASB frames (1 initial + 32 ETB responses).
+
+Substitutions applied:
+  printer MAC -> 02:00:00:00:00:01
+  host MAC    -> 02:00:00:00:00:02
+  printer IP  -> 192.0.2.10
+  host IP     -> 192.0.2.20

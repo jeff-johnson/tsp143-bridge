@@ -1,0 +1,39 @@
+scenario: shopify-replay
+captured: 2026-04-25T16:43:43Z
+host_os:  Debian 13 (Linux 6.12.74) — VM tsp143lan
+ifaces:   enp0s3 (192.168.0.124, main net — visible to phone)
+          enp0s8 (10.0.0.1/24, isolated wired link to real printer)
+tshark:   no
+
+Setup:
+  - star_discovery.py running on the VM, advertising 192.168.0.124 as a
+    "TSP143III" printer (the bridge's discovery emulator).
+  - Existing iptables DNAT forwarding TCP 9100/9101/22222/80 from the
+    main-net interface (enp0s3) to the real printer at 10.0.0.120 (via
+    enp0s8). MASQUERADE on enp0s8 for return traffic.
+  - Phone (192.168.0.103, Android Shopify POS) discovered the VM as a
+    printer, connected to TCP 9100/9101 on the VM, and the kernel
+    transparently routed TCP through to the real printer at 10.0.0.120.
+
+Capture endpoints:
+  - main-net.pcap: enp0s3 — phone <-> VM (Shopify's actual bytes; addresses
+    are the public-facing ones the phone sees)
+  - printer-net.pcap: enp0s8 — VM <-> printer (post-NAT view; payload is
+    identical to main-net but with NAT'd addresses)
+
+Substitutions applied:
+  main-net.pcap:
+    phone MAC      66:b6:30:27:65:cd  -> 02:00:00:00:00:03
+    VM MAC         08:00:27:7d:f6:58  -> 02:00:00:00:00:02
+    phone IP       192.168.0.103       -> 192.0.2.30
+    VM IP          192.168.0.124       -> 192.0.2.20
+    gateway IP     192.168.0.1         -> 192.0.2.1
+  printer-net.pcap:
+    printer MAC    00:11:62:13:de:ef  -> 02:00:00:00:00:01
+    VM MAC         08:00:27:da:8e:82  -> 02:00:00:00:00:04
+    printer IP     10.0.0.120          -> 192.0.2.10
+    VM IP          10.0.0.1            -> 192.0.2.40
+
+  Note the synthetic IPs and MACs differ between the two pcaps because
+  they're separate L2 segments — main-net side uses .20/.30, printer-net
+  side uses .10/.40 — preserving the topology.

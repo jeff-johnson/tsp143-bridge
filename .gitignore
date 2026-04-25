@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+.claude/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+research/raw-unscrubbed/
