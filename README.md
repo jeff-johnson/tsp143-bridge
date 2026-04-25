@@ -1,14 +1,9 @@
 # TSP143IIIU Wi-Fi Print Bridge
 
 Turn a ~$15 Raspberry Pi Zero 2 W into a Wi-Fi print server for the Star
-Micronics **TSP143IIIU** (USB-only) receipt printer so Shopify POS on iPad
+Micronics **TSP143IIIU** (USB-only) receipt printer so the Shopify POS app
 can print to it wirelessly — including cash-drawer kick and real printer
 status — with no CUPS, no Star driver, and no paid software.
-
-```
-[iPad / Shopify POS] ──TCP 9100/9101 (Wi-Fi)──> [Pi Zero 2 W] ──USB──> [TSP143IIIU]
-                     <────UDP 22222 discovery──── (bridge)
-```
 
 The bridge impersonates a Star LAN printer (TSP143IIILAN) closely enough that
 Shopify's StarIO SDK discovers it, prints to it, fires the cash drawer, and
