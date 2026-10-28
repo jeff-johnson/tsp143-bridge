@@ -238,15 +238,15 @@ def run(model: str, print_port: int):
         socket.inet_ntoa(mask_bytes), socket.inet_ntoa(gw_bytes),
     )
 
-    # Listen on 0.0.0.0 to receive broadcasts, but use a separate
-    # socket bound to our real IP for sending responses
-    recv_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    recv_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    recv_sock.settimeout(1.0)
-    recv_sock.bind(("0.0.0.0", DISCOVERY_PORT))
-
-    send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    send_sock.bind((ip, 0))  # bind to our real IP, any port
+    # Listen on 0.0.0.0 to receive broadcasts, and send responses through
+    # the same socket so they come FROM UDP port 22222, as a real Star
+    # printer's do. StarIO on Android (e.g. Square Register) silently
+    # discards discovery replies whose source port isn't 22222; a separate
+    # send socket bound to an ephemeral port made the bridge invisible there.
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.settimeout(1.0)
+    sock.bind(("0.0.0.0", DISCOVERY_PORT))
 
     logger.info(
         "Discovery responder listening on UDP port %d, advertising as %s",
@@ -256,7 +256,7 @@ def run(model: str, print_port: int):
 
     while running:
         try:
-            data, addr = recv_sock.recvfrom(BUFFER_SIZE)
+            data, addr = sock.recvfrom(BUFFER_SIZE)
         except socket.timeout:
             continue
         except OSError:
@@ -267,13 +267,13 @@ def run(model: str, print_port: int):
         kind = "structured" if is_structured_query(data) else "loose"
         logger.info("Discovery request (%s) from %s:%d", kind, addr[0], addr[1])
         try:
-            send_sock.sendto(response, addr)
-            logger.debug("Sent response from %s to %s:%d", ip, addr[0], addr[1])
+            sock.sendto(response, addr)
+            logger.debug("Sent response from %s:%d to %s:%d",
+                         ip, DISCOVERY_PORT, addr[0], addr[1])
         except OSError as e:
             logger.error("Failed to send discovery response: %s", e)
 
-    recv_sock.close()
-    send_sock.close()
+    sock.close()
     logger.info("Discovery responder stopped")
 
 
