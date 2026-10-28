@@ -44,6 +44,14 @@ StarIO Protocol Overview:
 
     - ESC ACK SOH (1B 06 01): One-shot status request (used when ASB is off).
 
+    - Command replies: some commands make the printer answer with data that
+      is NOT an ASB frame. The firmware query ESC # * LF NUL, which StarIO
+      sends via getFirmwareInformation (Square does before each receipt),
+      returns "ESC # * , TSP100IIIUVer1.9 LF NUL". These replies start with
+      ESC (0x1B) and end with NUL. A LAN printer returns them on the 9100
+      connection, so the bridge passes them through to the print client
+      and never caches them as status.
+
 USB vs LAN ASB Differences:
     The USB printer (TSP143IIIU) sends 9-byte ASB frames with byte 1 = 0x06.
     The LAN printer (TSP100IIILAN) sends 11-byte frames with byte 1 = 0x86
@@ -213,10 +221,31 @@ def extract_asb_frame(data: bytes) -> tuple[bytes | None, bytes]:
     """
     if not data:
         return None, b""
+    if not is_asb_header(data[0]):
+        return None, bytes(data)
     size = asb_frame_size(data[0])
-    if size >= 2 and len(data) >= size:
+    if len(data) >= size:
         return bytes(data[:size]), bytes(data[size:])
     return None, bytes(data)
+
+
+# Minimum plausible ASB size. Real frames are 9 (USB) or 11 (LAN) bytes.
+ASB_MIN_SIZE = 7
+
+# How long to wait for the NUL that ends an ESC-prefixed command reply
+# before passing through whatever arrived.
+CMD_REPLY_TIMEOUT = 0.3
+
+
+def is_asb_header(header: int) -> bool:
+    """True if this byte can start a genuine ASB frame.
+
+    Per the header layout above: bit 0 must be 1, bits 4 and 7 must be 0,
+    and the encoded size must be at least ASB_MIN_SIZE. This rejects the
+    start of command replies such as ESC # * , ... (0x1B), which the old
+    check mistook for a 5-byte ASB frame.
+    """
+    return (header & 0x91) == 0x01 and asb_frame_size(header) >= ASB_MIN_SIZE
 
 
 def usb_asb_to_lan_format(usb_asb: bytes) -> bytes:
@@ -277,6 +306,12 @@ class BidirectionalBridge:
         # basis for 9101 status responses and forwarded to the 9100 client.
         # Contains real printer state: paper, cover, errors, ETB counter.
         self._last_asb: bytes = b""
+
+        # Bytes read from USB that haven't been parsed yet. Kept across
+        # reads so frames and command replies split over two USB reads
+        # are reassembled instead of misparsed.
+        self._usb_rx: bytearray = bytearray()
+        self._usb_rx_since: float = 0.0
 
         # Non-blocking write buffer for the TCP print client. Data is
         # queued here when send() would block, and drained by select().
@@ -361,12 +396,87 @@ class BidirectionalBridge:
                 data = os.read(self._usb_fd, BUFFER_SIZE)
                 if not data:
                     break
-                asb, _ = extract_asb_frame(data)
-                if asb:
-                    self._last_asb = asb
-                    self._log_real_asb(asb)
+                self._process_usb_bytes(data, forward=False)
             except OSError:
                 break
+        # Anything left over at startup is stale; discard it.
+        self._usb_rx.clear()
+
+    def _process_usb_bytes(self, data: bytes, forward: bool = True,
+                           flush_pending: bool = False):
+        """Split the USB byte stream into ASB frames and command replies.
+
+        - Genuine ASB frames update the cached status (served on 9101) and
+          are forwarded to the 9100 client in LAN format.
+        - Replies to commands (e.g. ESC # * firmware query, which a POS app
+          sends before a real receipt) start with ESC and end with NUL.
+          A real LAN printer returns these on the 9100 connection, so they
+          are passed through to the client unchanged, never cached as status.
+        - Incomplete data stays buffered until the next read.
+        """
+        if data:
+            if not self._usb_rx:
+                self._usb_rx_since = time.monotonic()
+            self._usb_rx.extend(data)
+
+        buf = self._usb_rx
+        while buf:
+            b0 = buf[0]
+            if is_asb_header(b0):
+                size = asb_frame_size(b0)
+                if len(buf) < size:
+                    if flush_pending:
+                        logger.warning("[usb] Dropping incomplete ASB: %s",
+                                       bytes(buf).hex())
+                        buf.clear()
+                    break
+                frame = bytes(buf[:size])
+                del buf[:size]
+                self._last_asb = frame
+                self._log_real_asb(frame)
+                if forward and self._print_client:
+                    lan_asb = usb_asb_to_lan_format(frame)
+                    self._log_fwd_asb(lan_asb)
+                    self._send_or_queue(
+                        self._print_client, self._print_write_buf, lan_asb, "print")
+            elif b0 == 0x1B:
+                end = buf.find(b"\x00")
+                if end == -1:
+                    if flush_pending or len(buf) > BUFFER_SIZE:
+                        end = len(buf) - 1
+                    else:
+                        break  # wait for the rest of the reply
+                chunk = bytes(buf[:end + 1])
+                del buf[:end + 1]
+                self._pass_through(chunk, forward)
+            else:
+                # Stray bytes: pass through up to the next ESC or ASB header.
+                i = 1
+                while i < len(buf) and buf[i] != 0x1B and not is_asb_header(buf[i]):
+                    i += 1
+                chunk = bytes(buf[:i])
+                del buf[:i]
+                self._pass_through(chunk, forward)
+
+        if buf:
+            self._usb_rx_since = time.monotonic()
+
+    def _pass_through(self, chunk: bytes, forward: bool):
+        """Send a non-status reply from the printer to the 9100 client."""
+        text = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
+        if forward and self._print_client:
+            logger.info("[usb  RSP] %d bytes to client: %s  |%s|",
+                        len(chunk), chunk.hex(), text)
+            self._send_or_queue(
+                self._print_client, self._print_write_buf, chunk, "print")
+        else:
+            logger.info("[usb  RSP] %d bytes, no client, dropped: %s  |%s|",
+                        len(chunk), chunk.hex(), text)
+
+    def _check_usb_rx_timeout(self):
+        """Flush a command reply that never got its terminating NUL."""
+        if self._usb_rx and time.monotonic() - self._usb_rx_since > CMD_REPLY_TIMEOUT:
+            self._process_usb_bytes(b"", forward=True, flush_pending=True)
 
     def _write_to_usb(self, data: bytes):
         """Write data to USB, queuing any overflow for later.
@@ -442,18 +552,8 @@ class BidirectionalBridge:
 
         logger.debug("[usb] Read %d bytes: %s", len(data), data.hex())
 
-        # Parse ASB frame(s) from the USB data
-        asb, remainder = extract_asb_frame(data)
-        if asb:
-            self._last_asb = asb
-            self._log_real_asb(asb)
-
-            # Forward to the active TCP print client in LAN format
-            if self._print_client:
-                lan_asb = usb_asb_to_lan_format(asb)
-                self._log_fwd_asb(lan_asb)
-                self._send_or_queue(
-                    self._print_client, self._print_write_buf, lan_asb, "print")
+        # Separate ASB frames from command replies (see _process_usb_bytes)
+        self._process_usb_bytes(data, forward=True)
 
     # -------------------------------------------------------------------
     # TCP: Port 9100 (print data channel)
@@ -686,10 +786,13 @@ class BidirectionalBridge:
                 wlist.append(self._usb_fd)
 
             try:
-                readable, writable, _ = select.select(rlist, wlist, [], 0.5)
+                timeout = 0.1 if self._usb_rx else 0.5
+                readable, writable, _ = select.select(rlist, wlist, [], timeout)
             except (ValueError, OSError):
                 self._close_print_client()
                 continue
+
+            self._check_usb_rx_timeout()
 
             # Flush buffered writes first
             if self._usb_fd in writable:
